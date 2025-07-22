@@ -1,4 +1,4 @@
-package br.com.gestoresportivo.model;
+package br.com.gestoresportivo.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
