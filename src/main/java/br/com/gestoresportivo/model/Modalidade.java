@@ -1,9 +1,18 @@
 package br.com.gestoresportivo.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "modalidade")
 public class Modalidade {
+    @Id
     private Integer id;
     private String nome;
     private Integer qtdAtlentaEquipe;
+
+    public Modalidade() {}
 
     public Modalidade(Integer id, String nome, Integer qtdAtlentaEquipe) {
         this.id = id;

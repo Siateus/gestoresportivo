@@ -1,9 +1,15 @@
 package br.com.gestoresportivo.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-
+@Entity
+@Table(name = "jogo")
 public class Jogo {
+    @Id
     private Integer id;
     private LocalDate data;
     private LocalTime hora;
@@ -14,6 +20,7 @@ public class Jogo {
     private Integer codEquipe2;
     private Integer codTorneio;
 
+    public Jogo() {}
     public Jogo(Integer id, LocalDate data, LocalTime hora, Integer pTime1, Integer pTime2, String placar,
                 Integer codEquipe1, Integer codEquipe2, Integer codTorneio) {
         this.id = id;

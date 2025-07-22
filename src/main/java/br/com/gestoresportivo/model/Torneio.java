@@ -1,11 +1,19 @@
 package br.com.gestoresportivo.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "torneio")
 public class Torneio {
+    @Id
     private Integer id;
     private String nome;
     private Integer qtdEquipe;
     private Integer codModalidade;
 
+    public Torneio() {}
     public Torneio(Integer id, String nome, Integer qtdEquipe, Integer codModalidade) {
         this.id = id;
         this.nome = nome;
