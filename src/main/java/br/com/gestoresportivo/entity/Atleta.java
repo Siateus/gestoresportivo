@@ -1,6 +1,9 @@
 package br.com.gestoresportivo.entity;
 
+import jakarta.persistence.Column; // Importar para @Column
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
@@ -8,7 +11,9 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "atleta")
 public class Atleta {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // O banco de dados vai gerar o ID automaticamente
     private Integer id;
     private String nome;
     private String cpf;
@@ -18,8 +23,7 @@ public class Atleta {
 
     public Atleta() {}
 
-    public Atleta(Integer id, String nome, String cpf, Character sexo, String cidade, LocalDate dataNascimento) {
-        this.id = id;
+    public Atleta(String nome, String cpf, Character sexo, String cidade, LocalDate dataNascimento) {
         this.nome = nome;
         this.cpf = cpf;
         this.sexo = sexo;
