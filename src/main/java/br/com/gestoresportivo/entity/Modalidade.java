@@ -3,23 +3,27 @@ package br.com.gestoresportivo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "modalidade")
+@Table(name = "modalidade") // Tabela no banco de dados
 public class Modalidade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cod")
     private Integer id;
+
+    @Column(nullable = false, length = 30)
     private String nome;
-    private Integer qtdAtlentaEquipe;
+
+    @Column(name = "qtd_atleta_equipe", nullable = false)
+    private Integer qtdAtletaEquipe;
 
     public Modalidade() {}
 
-    public Modalidade(Integer id, String nome, Integer qtdAtlentaEquipe) {
-        this.id = id;
+    public Modalidade(String nome, Integer qtdAtletaEquipe) {
         this.nome = nome;
-        this.qtdAtlentaEquipe = qtdAtlentaEquipe;
+        this.qtdAtletaEquipe = qtdAtletaEquipe;
     }
 
+    // Getters e Setters
     public Integer getId() {
         return id;
     }
@@ -36,11 +40,11 @@ public class Modalidade {
         this.nome = nome;
     }
 
-    public Integer getQtdAtlentaEquipe() {
-        return qtdAtlentaEquipe;
+    public Integer getQtdAtletaEquipe() {
+        return qtdAtletaEquipe;
     }
 
-    public void setQtdAtlentaEquipe(Integer qtdAtlentaEquipe) {
-        this.qtdAtlentaEquipe = qtdAtlentaEquipe;
+    public void setQtdAtletaEquipe(Integer qtdAtletaEquipe) {
+        this.qtdAtletaEquipe = qtdAtletaEquipe;
     }
 }

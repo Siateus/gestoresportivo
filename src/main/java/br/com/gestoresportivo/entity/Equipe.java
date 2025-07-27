@@ -9,46 +9,37 @@ public class Equipe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cod")
     private Integer id;
-    private Integer codModalidade;
+
+    @Column(nullable = false, length = 30)
     private String nome;
+
+    @Column(nullable = false, length = 5)
     private String sigla;
+
+    @ManyToOne
+    @JoinColumn(name = "cod_modalidade", referencedColumnName = "cod", nullable = false)
+    private Modalidade modalidade;
+
     public Equipe() {}
-    public Equipe(Integer id, Integer codModalidade, String nome, String sigla) {
-        this.id = id;
-        this.codModalidade = codModalidade;
+
+    public Equipe(String nome, String sigla, Modalidade modalidade) {
         this.nome = nome;
         this.sigla = sigla;
+        this.modalidade = modalidade;
     }
 
-    public Integer getId() {
-        return id;
-    }
+    // Getters e Setters
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public String getSigla() { return sigla; }
+    public void setSigla(String sigla) { this.sigla = sigla; }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public Modalidade getModalidade() {
+        return modalidade;
     }
-
-    public Integer getCodModalidade() {
-        return codModalidade;
-    }
-
-    public void setCodModalidade(Integer codModalidade) {
-        this.codModalidade = codModalidade;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getSigla() {
-        return sigla;
-    }
-
-    public void setSigla(String sigla) {
-        this.sigla = sigla;
+    public void setModalidade(Modalidade modalidade) {
+        this.modalidade = modalidade;
     }
 }
