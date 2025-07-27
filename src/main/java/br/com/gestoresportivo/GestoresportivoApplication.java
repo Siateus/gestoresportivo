@@ -1,4 +1,4 @@
-package br.com.gestoresportivo.config;
+package br.com.gestoresportivo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

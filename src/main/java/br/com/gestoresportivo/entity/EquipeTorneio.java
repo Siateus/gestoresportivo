@@ -3,17 +3,19 @@ package br.com.gestoresportivo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "equipetorneio")
+@Table(name = "equipe_torneio")
 public class EquipeTorneio {
     @EmbeddedId
     private EquipeTorneioId id;
 
     @ManyToOne
-    @JoinColumn(name = "codEquipe", referencedColumnName = "id", insertable = false, updatable = false)
+    @MapsId("codEquipe")
+    @JoinColumn(name = "cod_equipe", referencedColumnName = "cod")
     private Equipe equipe;
 
     @ManyToOne
-    @JoinColumn(name = "codTorneio", referencedColumnName = "id", insertable = false, updatable = false)
+    @MapsId("codTorneio")
+    @JoinColumn(name = "cod_torneio", referencedColumnName = "cod")
     private Torneio torneio;
 
     public EquipeTorneio() {}

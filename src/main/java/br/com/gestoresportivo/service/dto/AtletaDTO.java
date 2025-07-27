@@ -18,7 +18,7 @@ public class AtletaDTO {
 
     @NotNull(message = "O sexo não pode ser nulo")
     @Pattern(regexp = "[fmFM]", message = "O sexo deve ser 'f' ou 'm'")
-    private Character sexo;
+    private String sexo;
 
     @NotBlank(message = "A cidade não pode estar em branco")
     private String cidade;
@@ -29,7 +29,7 @@ public class AtletaDTO {
 
     public AtletaDTO() {}
 
-    public AtletaDTO(String nome, String cpf, Character sexo, String cidade, LocalDate dataNascimento) {
+    public AtletaDTO(String nome, String cpf, String sexo, String cidade, LocalDate dataNascimento) {
         this.nome = nome;
         this.cpf = cpf;
         this.sexo = sexo;
@@ -53,11 +53,11 @@ public class AtletaDTO {
         this.cpf = cpf;
     }
 
-    public Character getSexo() {
+    public String  getSexo() {
         return sexo;
     }
 
-    public void setSexo(Character sexo) {
+    public void setSexo(String sexo) {
         this.sexo = sexo;
     }
 

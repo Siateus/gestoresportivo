@@ -13,7 +13,8 @@ import java.time.LocalDate;
 public class Atleta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // O banco de dados vai gerar o ID automaticamente
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cod")
     private Integer id;
     private String nome;
     private String cpf;

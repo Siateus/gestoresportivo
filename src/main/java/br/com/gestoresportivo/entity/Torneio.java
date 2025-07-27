@@ -1,13 +1,13 @@
 package br.com.gestoresportivo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "torneio")
 public class Torneio {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cod")
     private Integer id;
     private String nome;
     private Integer qtdEquipe;
