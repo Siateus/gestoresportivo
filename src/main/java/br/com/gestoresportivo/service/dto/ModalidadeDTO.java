@@ -1,4 +1,4 @@
 package br.com.gestoresportivo.service.dto;
 
-public class PartidaDTO {
+public class ModalidadeDTO {
 }

@@ -1,4 +1,4 @@
 package br.com.gestoresportivo.repository;
 
-public class PartidaRepository {
+public class JogoRepository {
 }
