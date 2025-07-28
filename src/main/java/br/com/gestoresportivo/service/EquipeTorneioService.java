@@ -7,6 +7,8 @@ import br.com.gestoresportivo.entity.Torneio;
 import br.com.gestoresportivo.repository.EquipeRepository;
 import br.com.gestoresportivo.repository.EquipeTorneioRepository;
 import br.com.gestoresportivo.repository.TorneioRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -60,6 +62,22 @@ public class EquipeTorneioService {
         equipeTorneio.setTorneio(torneioGerenciado);
 
         return equipeTorneioRepository.save(equipeTorneio);
+    }
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Transactional
+    public void inscreverEquipeViaProcedure(Integer codEquipe, Integer codTorneio) {
+        try {
+            entityManager.createNativeQuery("CALL inscrever_equipe(:equipe_id, :torneio_id)")
+                    .setParameter("equipe_id", codEquipe)
+                    .setParameter("torneio_id", codTorneio)
+                    .executeUpdate(); // Usa executeUpdate para comandos que não retornam resultados
+        } catch (PersistenceException e) {
+            // Trate erros como duplicidade, etc.
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao inscrever equipe via procedure: " + e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)

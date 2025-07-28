@@ -6,6 +6,8 @@ import br.com.gestoresportivo.entity.Torneio;
 import br.com.gestoresportivo.repository.JogoRepository;
 import br.com.gestoresportivo.repository.EquipeRepository;
 import br.com.gestoresportivo.repository.TorneioRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ public class JogoService {
     @Autowired
     private TorneioRepository torneioRepository;
 
+    @Autowired
+    private EntityManager entityManager;
 
     private Equipe buscarEquipeExistente(Integer codEquipe) {
         if (codEquipe == null) {
@@ -46,7 +50,6 @@ public class JogoService {
 
     @Transactional
     public Jogo salvarJogo(Jogo jogo) {
-        // Assegura que as entidades relacionadas existam e estejam gerenciadas
         Equipe equipe1Gerenciada = buscarEquipeExistente(jogo.getEquipe1().getId());
         jogo.setEquipe1(equipe1Gerenciada);
 
@@ -56,9 +59,16 @@ public class JogoService {
         Torneio torneioGerenciado = buscarTorneioExistente(jogo.getTorneio().getId());
         jogo.setTorneio(torneioGerenciado);
 
-        // Lógica adicional, como validar que Equipe1 e Equipe2 são diferentes,
-        // ou que pertencem ao mesmo torneio/modalidade, etc.
-        // Aqui também você pode chamar a FUNCTION SQL para gerar o placar se o front-end não enviar.
+        if (jogo.getPlacar() == null || jogo.getPlacar().isEmpty()) {
+            // Cria a query nativa usando parâmetros POSICIONAIS (?)
+            Query query = entityManager.createNativeQuery("SELECT gerar_placar_jogo(?, ?)");
+            // Define os parâmetros pela posição (1 para o primeiro ?, 2 para o segundo ?)
+            query.setParameter(1, jogo.getpTime1());
+            query.setParameter(2, jogo.getpTime2());
+
+            String placarGerado = (String) query.getSingleResult();
+            jogo.setPlacar(placarGerado);
+        }
 
         return jogoRepository.save(jogo);
     }

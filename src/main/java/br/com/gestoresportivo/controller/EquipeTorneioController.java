@@ -37,9 +37,11 @@ public class EquipeTorneioController {
 
         EquipeTorneio equipeTorneio = new EquipeTorneio(id, equipe, torneio);
 
-        EquipeTorneio associacaoSalva = equipeTorneioService.salvarEquipeTorneio(equipeTorneio); // <-- CORREÇÃO AQUI!
+       // EquipeTorneio associacaoSalva = equipeTorneioService.salvarEquipeTorneio(equipeTorneio);
+       equipeTorneioService.inscreverEquipeViaProcedure(equipeTorneioDTO.getCodEquipe(), equipeTorneioDTO.getCodTorneio());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(associacaoSalva);
+        //return ResponseEntity.status(HttpStatus.CREATED).body(associacaoSalva);
+        return ResponseEntity.status(HttpStatus.CREATED).body(equipeTorneio);
     }
 
     // GET /equipes-torneios - Listar todas as associações

@@ -25,8 +25,8 @@ public class JogoDTO {
     @Min(value = 0, message = "A pontuação da segunda equipe deve ser maior ou igual a zero")
     private Integer pTime2; // Nome do campo em camelCase
 
-    @NotBlank(message = "O placar não pode estar em branco")
-    @Pattern(regexp = "^\\d+X\\d+$", message = "O placar deve estar no formato 'pontosXpontos' (ex: 3X1)") // Validação para "numXnum"
+    //@NotBlank(message = "O placar não pode estar em branco")
+    //@Pattern(regexp = "^\\d+X\\d+$", message = "O placar deve estar no formato 'pontosXpontos' (ex: 3X1)") // Validação para "numXnum"
     private String placar;
 
     @NotNull(message = "O código da primeira equipe não pode ser nulo")

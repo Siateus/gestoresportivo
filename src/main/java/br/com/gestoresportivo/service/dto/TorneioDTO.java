@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 public class TorneioDTO {
 
     @NotBlank(message = "O nome do torneio não pode estar em branco")
-    @Size(max = 30, message = "O nome deve ter no máximo 30 caracteres")
+    @Size(max = 50, message = "O nome deve ter no máximo 50 caracteres")
     private String nome;
 
     @NotNull(message = "A quantidade de equipes não pode ser nula")
