@@ -25,12 +25,14 @@ public class EquipeTorneioService {
     private EquipeTorneioRepository equipeTorneioRepository;
 
     @Autowired
-    private EquipeRepository equipeRepository; // Para buscar a Equipe real
+    private EquipeRepository equipeRepository;
 
     @Autowired
-    private TorneioRepository torneioRepository; // Para buscar o Torneio real
+    private TorneioRepository torneioRepository;
 
-    // Métodos auxiliares para buscar entidades relacionadas
+    @Autowired
+    private EntityManager entityManager; // Mantenha se for usar a procedure em algum lugar
+
     private Equipe buscarEquipeExistente(Integer codEquipe) {
         return equipeRepository.findById(codEquipe)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipe não encontrada com ID: " + codEquipe));
@@ -41,59 +43,53 @@ public class EquipeTorneioService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Torneio não encontrado com ID: " + codTorneio));
     }
 
-    @Transactional
+    @Transactional // Este método usa o JPA para salvar e validar
     public EquipeTorneio salvarEquipeTorneio(EquipeTorneio equipeTorneio) {
-        // Verifica se a associação já existe antes de salvar
-        if (equipeTorneioRepository.existsById(equipeTorneio.getId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Esta equipe já está inscrita neste torneio.");
-        }
-
         // Assegura que as entidades Equipe e Torneio existam e estejam gerenciadas
         Equipe equipeGerenciada = buscarEquipeExistente(equipeTorneio.getEquipe().getId());
         Torneio torneioGerenciado = buscarTorneioExistente(equipeTorneio.getTorneio().getId());
 
-        // A lógica da Trigger 'ValidarEquipeTorneioModalidade' pode ser replicada aqui no Service
-        // para validação em nível de aplicação antes mesmo de tentar salvar no DB.
+        // Validação da regra de negócio: equipe e torneio devem ser da mesma modalidade
         if (!equipeGerenciada.getModalidade().getId().equals(torneioGerenciado.getModalidade().getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A equipe e o torneio devem ser da mesma modalidade.");
+        }
+
+        // Verifica se a associação já existe (PK composta)
+        if (equipeTorneioRepository.existsById(equipeTorneio.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Esta equipe já está inscrita neste torneio.");
         }
 
         equipeTorneio.setEquipe(equipeGerenciada);
         equipeTorneio.setTorneio(torneioGerenciado);
 
+        // O JPA salva e retorna a entidade gerenciada
         return equipeTorneioRepository.save(equipeTorneio);
     }
 
-    @Autowired
-    private EntityManager entityManager;
-
+    // Método para chamar procedure (se ainda for necessário para outros fins)
     @Transactional
     public void inscreverEquipeViaProcedure(Integer codEquipe, Integer codTorneio) {
         try {
-            entityManager.createNativeQuery("CALL inscrever_equipe(:equipe_id, :torneio_id)")
-                    .setParameter("equipe_id", codEquipe)
-                    .setParameter("torneio_id", codTorneio)
-                    .executeUpdate(); // Usa executeUpdate para comandos que não retornam resultados
+            entityManager.createNativeQuery("CALL inscrever_equipe(?, ?)")
+                    .setParameter(1, codEquipe)
+                    .setParameter(2, codTorneio)
+                    .executeUpdate();
         } catch (PersistenceException e) {
-            // Trate erros como duplicidade, etc.
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao inscrever equipe via procedure: " + e.getMessage());
         }
     }
 
     @Transactional(readOnly = true)
     public List<EquipeTorneio> buscarTodasEquipesTorneios() {
-        return equipeTorneioRepository.findAll();
+        // CHAMA O NOVO MÉTODO COM JOIN FETCH
+        return equipeTorneioRepository.findAllWithEquipeAndTorneio();
     }
 
     @Transactional(readOnly = true)
     public Optional<EquipeTorneio> buscarEquipeTorneioPorId(EquipeTorneioId id) {
-        return equipeTorneioRepository.findById(id);
+        // CHAMA O NOVO MÉTODO COM JOIN FETCH
+        return equipeTorneioRepository.findByIdWithEquipeAndTorneio(id);
     }
-
-    // Para atualizar, normalmente você não atualiza uma chave composta.
-    // Você deletaria a antiga associação e criaria uma nova, se a chave mudar.
-    // Se a tabela de junção tivesse atributos extras (ex: 'dataInscricao'), eles poderiam ser atualizados aqui.
-    // Por enquanto, não há PUT para esta entidade, pois não tem atributos extras além da chave.
 
     @Transactional
     public boolean deletarEquipeTorneio(EquipeTorneioId id) {

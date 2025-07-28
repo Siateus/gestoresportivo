@@ -1,10 +1,10 @@
 package br.com.gestoresportivo.controller;
 
 import br.com.gestoresportivo.service.dto.EquipeTorneioDTO;
-import br.com.gestoresportivo.entity.Equipe; // Importa Equipe para criar a entidade com ID
+import br.com.gestoresportivo.entity.Equipe;
 import br.com.gestoresportivo.entity.EquipeTorneio;
-import br.com.gestoresportivo.entity.EquipeTorneioId; // Importa a classe da chave composta
-import br.com.gestoresportivo.entity.Torneio; // Importa Torneio para criar a entidade com ID
+import br.com.gestoresportivo.entity.EquipeTorneioId;
+import br.com.gestoresportivo.entity.Torneio;
 import br.com.gestoresportivo.service.EquipeTorneioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +37,9 @@ public class EquipeTorneioController {
 
         EquipeTorneio equipeTorneio = new EquipeTorneio(id, equipe, torneio);
 
-       // EquipeTorneio associacaoSalva = equipeTorneioService.salvarEquipeTorneio(equipeTorneio);
-       equipeTorneioService.inscreverEquipeViaProcedure(equipeTorneioDTO.getCodEquipe(), equipeTorneioDTO.getCodTorneio());
-
-        //return ResponseEntity.status(HttpStatus.CREATED).body(associacaoSalva);
-        return ResponseEntity.status(HttpStatus.CREATED).body(equipeTorneio);
+        // CHAMA O MÉTODO JPA-MANAGED DO SERVICE E RETORNA O RESULTADO DELE
+        EquipeTorneio associacaoSalva = equipeTorneioService.salvarEquipeTorneio(equipeTorneio);
+        return ResponseEntity.status(HttpStatus.CREATED).body(associacaoSalva);
     }
 
     // GET /equipes-torneios - Listar todas as associações
@@ -79,8 +77,8 @@ public class EquipeTorneioController {
         boolean deletado = equipeTorneioService.deletarEquipeTorneio(id);
 
         if (deletado) {
-            return ResponseEntity.noContent().build(); // 204 No Content para exclusão bem-sucedida
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found se não existir
+        return ResponseEntity.notFound().build();
     }
 }
