@@ -47,8 +47,8 @@ public class AtletaController {
 
     // Endpoint GET para buscar atleta por CPF
     @GetMapping("/cpf/{cpf}")
-    public ResponseEntity<Atleta> buscarAtletaPorCpf(@PathVariable String cpf) {
-        Atleta atleta = atletaService.buscarAtletaPorCpf(cpf); // Service retorna Atleta diretamente ou null
+    public ResponseEntity<Optional<Atleta>> buscarAtletaPorCpf(@PathVariable String cpf) {
+        Optional<Atleta> atleta = atletaService.buscarAtletaPorCpf(cpf);
         if (atleta != null) {
             return ResponseEntity.ok(atleta);
         }

@@ -19,6 +19,10 @@ public class ModalidadeService {
 
     @Transactional
     public Modalidade salvarModalidade(Modalidade modalidade) {
+        Optional<Modalidade>  optionalModalidade = modalidadeRepository.findByNome(modalidade.getNome());
+        if(optionalModalidade.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe uma modalidade com o nome '" + modalidade.getNome() + "'.");
+        }
         return modalidadeRepository.save(modalidade);
     }
 

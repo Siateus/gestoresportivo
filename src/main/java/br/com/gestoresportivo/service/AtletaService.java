@@ -2,9 +2,12 @@ package br.com.gestoresportivo.service;
 
 import br.com.gestoresportivo.entity.Atleta;
 import br.com.gestoresportivo.repository.AtletaRepository;
+import br.com.gestoresportivo.repository.AtletaEquipeRepository; // <--- Importar
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +18,16 @@ public class AtletaService {
     @Autowired
     private AtletaRepository atletaRepository;
 
+    @Autowired
+    private AtletaEquipeRepository atletaEquipeRepository;
+
     @Transactional
     public Atleta salvarAtleta(Atleta atleta) {
+        Optional<Atleta> atletaExistentePorCpf = atletaRepository.findByCpf(atleta.getCpf());
+        if (atletaExistentePorCpf.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF '" + atleta.getCpf() + "' já cadastrado para outro atleta.");
+        }
+
         return atletaRepository.save(atleta);
     }
 
@@ -27,15 +38,21 @@ public class AtletaService {
 
     @Transactional
     public boolean deletarAtleta(Integer id) {
-        if (atletaRepository.existsById(id)) {
-            atletaRepository.deleteById(id);
-            return true;
+        if (!atletaRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Atleta com ID " + id + " não encontrado.");
         }
-        return false;
+
+        // Verifica se o atleta está associado a alguma equipe
+        if (atletaEquipeRepository.existsByIdCodAtleta(id)) { // Usando o método que criamos
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Não é possível deletar o Atleta com ID " + id + " pois ele está associado a uma equipe.");
+        }
+
+        atletaRepository.deleteById(id);
+        return true;
     }
 
     @Transactional(readOnly = true)
-    public Atleta buscarAtletaPorCpf(String cpf) {
+    public Optional<Atleta> buscarAtletaPorCpf(String cpf) {
         return atletaRepository.findByCpf(cpf);
     }
 
@@ -46,10 +63,19 @@ public class AtletaService {
 
     @Transactional
     public Optional<Atleta> atualizarAtleta(Integer id, Atleta atletaAtualizado) {
-        Optional<Atleta> atletaExistente = atletaRepository.findById(id);
+        Optional<Atleta> atletaExistenteOpt = atletaRepository.findById(id);
 
-        if (atletaExistente.isPresent()) {
-            Atleta atleta = atletaExistente.get();
+        if (atletaExistenteOpt.isPresent()) {
+            Atleta atleta = atletaExistenteOpt.get();
+
+            // Verifica se o CPF foi alterado E se o novo CPF já existe para outro atleta
+            if (atletaAtualizado.getCpf() != null && !atletaAtualizado.getCpf().equals(atleta.getCpf())) {
+                Optional<Atleta> atletaComNovoCpf = atletaRepository.findByCpf(atletaAtualizado.getCpf());
+                // Se encontrou um atleta com o novo CPF E NÃO É o próprio atleta que está sendo atualizado
+                if (atletaComNovoCpf.isPresent() && !atletaComNovoCpf.get().getId().equals(id)) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Novo CPF '" + atletaAtualizado.getCpf() + "' já cadastrado para outro atleta.");
+                }
+            }
 
             if (atletaAtualizado.getNome() != null) {
                 atleta.setNome(atletaAtualizado.getNome());
