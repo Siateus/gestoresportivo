@@ -18,9 +18,6 @@ public class Torneio {
 
     @ManyToOne // Relacionamento muitos para um: muitos torneios podem ter uma modalidade
     @JoinColumn(name = "cod_modalidade", referencedColumnName = "cod", nullable = false)
-    // ^^^ 'name' é a coluna FK na tabela 'torneio'
-    // ^^^ 'referencedColumnName' é a PK na tabela 'modalidade'
-    // ^^^ 'nullable = false' indica que um torneio SEMPRE deve ter uma modalidade
     private Modalidade modalidade; // Campo que representa a entidade Modalidade
 
     public Torneio() {}

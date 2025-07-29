@@ -66,8 +66,6 @@ public class EquipeController {
     // PUT /equipes/{id} - Atualizar uma equipe existente
     @PutMapping("/{id}")
     public ResponseEntity<Equipe> atualizarEquipe(@PathVariable Integer id, @RequestBody @Valid EquipeDTO equipeDTO) {
-        // Cria uma instância de Modalidade com o ID recebido no DTO, se fornecido.
-        // O service validará se a modalidade existe e anexará ao contexto.
         Modalidade modalidade = null;
         if (equipeDTO.getCodModalidade() != null) {
             modalidade = new Modalidade();
@@ -77,15 +75,15 @@ public class EquipeController {
         Equipe equipeParaAtualizar = new Equipe(
                 equipeDTO.getNome(),
                 equipeDTO.getSigla(),
-                modalidade // Passa a entidade Modalidade (com ID)
+                modalidade
         );
 
         Optional<Equipe> equipeAtualizada = equipeService.atualizarEquipe(id, equipeParaAtualizar);
 
         if (equipeAtualizada.isPresent()) {
-            return ResponseEntity.ok(equipeAtualizada.get()); // 200 OK com a equipe atualizada
+            return ResponseEntity.ok(equipeAtualizada.get());
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found se não existir
+        return ResponseEntity.notFound().build();
     }
 
     // DELETE /equipes/{id} - Excluir uma equipe
@@ -93,8 +91,8 @@ public class EquipeController {
     public ResponseEntity<Void> deletarEquipe(@PathVariable Integer id) {
         boolean deletado = equipeService.deletarEquipe(id);
         if (deletado) {
-            return ResponseEntity.noContent().build(); // 204 No Content para exclusão bem-sucedida
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found se não existir
+        return ResponseEntity.notFound().build();
     }
 }

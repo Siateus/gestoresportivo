@@ -18,6 +18,7 @@ public class AtletaPorEquipeModalidadeViewController {
     @Autowired
     private AtletaPorEquipeModalidadeViewService viewService;
 
+    // Endpoint GET para a VIEW
     @GetMapping("/atletas-por-equipe-modalidade")
     public ResponseEntity<List<AtletaPorEquipeModalidadeResponseDTO>> getAtletasPorEquipeModalidade() {
         List<AtletaPorEquipeModalidadeResponseDTO> results = viewService.buscarTodosAtletasPorEquipeModalidade();

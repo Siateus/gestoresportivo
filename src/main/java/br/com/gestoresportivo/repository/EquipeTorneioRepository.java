@@ -20,4 +20,7 @@ public interface EquipeTorneioRepository extends JpaRepository<EquipeTorneio, Eq
     // Método para buscar uma associação por ID, carregando Equipe e Torneio ansiosamente
     @Query("SELECT et FROM EquipeTorneio et JOIN FETCH et.equipe JOIN FETCH et.torneio WHERE et.id = :id")
     Optional<EquipeTorneio> findByIdWithEquipeAndTorneio(EquipeTorneioId id);
+
+    boolean existsByIdCodTorneio(Integer codTorneio);
+    List<EquipeTorneio> findByIdCodTorneio(Integer codTorneio);
 }

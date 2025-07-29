@@ -23,10 +23,10 @@ public class AtletaEquipeService {
     private AtletaEquipeRepository atletaEquipeRepository;
 
     @Autowired
-    private AtletaRepository atletaRepository; // Para buscar o Atleta real
+    private AtletaRepository atletaRepository;
 
     @Autowired
-    private EquipeRepository equipeRepository; // Para buscar a Equipe real
+    private EquipeRepository equipeRepository;
 
     // Métodos auxiliares para buscar entidades relacionadas
     private Atleta buscarAtletaExistente(Integer codAtleta) {
@@ -50,17 +50,6 @@ public class AtletaEquipeService {
         Atleta atletaGerenciado = buscarAtletaExistente(atletaEquipe.getAtleta().getId());
         Equipe equipeGerenciada = buscarEquipeExistente(atletaEquipe.getEquipe().getId());
 
-        // Lógica da Trigger 'ValidarAtletaEquipeModalidade' pode ser implementada aqui
-        // (Impede que um atleta seja adicionado a mais de uma equipe na mesma modalidade.)
-        // Para isso, você precisaria buscar todas as equipes do atleta e verificar suas modalidades.
-        // Exemplo (simplificado):
-        // List<AtletaEquipe> associacoesExistentesDoAtleta = atletaEquipeRepository.findByIdCodAtleta(atletaGerenciado.getId());
-        // for (AtletaEquipe ae : associacoesExistentesDoAtleta) {
-        //     if (ae.getEquipe().getModalidade().equals(equipeGerenciada.getModalidade())) {
-        //         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Atleta já está em uma equipe desta modalidade.");
-        //     }
-        // }
-
 
         atletaEquipe.setAtleta(atletaGerenciado);
         atletaEquipe.setEquipe(equipeGerenciada);
@@ -78,8 +67,6 @@ public class AtletaEquipeService {
         return atletaEquipeRepository.findById(id);
     }
 
-    // Não é comum ter um PUT para esta entidade se ela não tiver atributos extras,
-    // pois a chave composta já define a relação. Se a chave mudasse, seria DELETE + POST.
 
     @Transactional
     public boolean deletarAtletaEquipe(AtletaEquipeId id) {

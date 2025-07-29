@@ -12,20 +12,15 @@ public class EquipeTorneio implements Serializable { // Marque a entidade como S
     @ManyToOne // Relacionamento muitos-para-um com Equipe
     @MapsId("codEquipe") // Mapeia o campo 'codEquipe' da EquipeTorneioId para este relacionamento
     @JoinColumn(name = "cod_equipe", referencedColumnName = "cod", nullable = false)
-    // ^^^ 'name' é a coluna FK na tabela 'equipe_torneio'
-    // ^^^ 'referencedColumnName' é a PK na tabela 'equipe'
     private Equipe equipe; // Campo que representa a entidade Equipe
 
     @ManyToOne // Relacionamento muitos-para-um com Torneio
     @MapsId("codTorneio") // Mapeia o campo 'codTorneio' da EquipeTorneioId para este relacionamento
     @JoinColumn(name = "cod_torneio", referencedColumnName = "cod", nullable = false)
-    // ^^^ 'name' é a coluna FK na tabela 'equipe_torneio'
-    // ^^^ 'referencedColumnName' é a PK na tabela 'torneio'
     private Torneio torneio; // Campo que representa a entidade Torneio
 
     public EquipeTorneio() {}
 
-    // Construtor para criar novas associações
     public EquipeTorneio(EquipeTorneioId id, Equipe equipe, Torneio torneio) {
         this.id = id;
         this.equipe = equipe;

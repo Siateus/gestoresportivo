@@ -26,9 +26,6 @@ DELIMITER //
 CREATE TRIGGER validar_equipe_torneio_modalidade BEFORE INSERT ON equipe_torneio FOR EACH ROW BEGIN DECLARE equipe_modalidade_cod INT; DECLARE torneio_modalidade_cod INT; SELECT cod_modalidade INTO equipe_modalidade_cod FROM equipe WHERE cod = NEW.cod_equipe; SELECT cod_modalidade INTO torneio_modalidade_cod FROM torneio WHERE cod = NEW.cod_torneio; IF equipe_modalidade_cod IS NULL OR torneio_modalidade_cod IS NULL OR equipe_modalidade_cod <> torneio_modalidade_cod THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Nao e possivel inscrever uma equipe em um torneio de modalidade diferente.'; END IF; END //
 DELIMITER ;
 
--- DML (Data Manipulation Language) - Insercao de Dados
--- Use este bloco apenas se quiser popular o banco automaticamente na inicializacao do Docker.
--- Caso contrario, insira os dados via API.
 
 -- 1. Insercao de Modalidades
 INSERT INTO modalidade (nome, qtd_atleta_equipe) VALUES ('Voleibol', 6); -- ID 1

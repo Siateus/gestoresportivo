@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "atleta_equipe") // Nome da tabela no banco de dados (snake_case)
-public class AtletaEquipe implements Serializable { // Entidade de junção deve ser Serializable
+@Table(name = "atleta_equipe")
+public class AtletaEquipe implements Serializable {
 
     @EmbeddedId // Define que o ID é uma chave composta incorporada
     private AtletaEquipeId id;
 
-    @ManyToOne // Relacionamento muitos-para-um com Equipe
+    @ManyToOne
     @MapsId("codEquipe") // Mapeia o campo 'codEquipe' do AtletaEquipeId para este relacionamento
     @JoinColumn(name = "cod_equipe", referencedColumnName = "cod", nullable = false)
     private Equipe equipe; // Campo que representa a entidade Equipe
@@ -18,8 +18,7 @@ public class AtletaEquipe implements Serializable { // Entidade de junção deve
     @ManyToOne // Relacionamento muitos-para-um com Atleta
     @MapsId("codAtleta") // Mapeia o campo 'codAtleta' do AtletaEquipeId para este relacionamento
     @JoinColumn(name = "cod_atleta", referencedColumnName = "cod", nullable = false)
-    private Atleta atleta; // Campo que representa a entidade Atleta
-
+    private Atleta atleta;
     public AtletaEquipe() {}
 
     public AtletaEquipe(AtletaEquipeId id, Equipe equipe, Atleta atleta) {

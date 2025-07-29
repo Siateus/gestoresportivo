@@ -23,15 +23,13 @@ public class TorneioController {
     // POST /torneios - Criar um novo torneio
     @PostMapping
     public ResponseEntity<Torneio> criarTorneio(@RequestBody @Valid TorneioDTO torneioDTO) {
-        // Cria uma instância de Modalidade com o ID recebido no DTO.
-        // O service validará se a modalidade existe e a anexará ao contexto de persistência.
         Modalidade modalidade = new Modalidade();
         modalidade.setId(torneioDTO.getCodModalidade());
 
         Torneio torneio = new Torneio(
                 torneioDTO.getNome(),
                 torneioDTO.getQtdEquipe(),
-                modalidade // Passa a entidade Modalidade (com apenas o ID preenchido)
+                modalidade
         );
         Torneio torneioSalvo = torneioService.salvarTorneio(torneio);
         return ResponseEntity.status(HttpStatus.CREATED).body(torneioSalvo);
@@ -42,9 +40,9 @@ public class TorneioController {
     public ResponseEntity<List<Torneio>> listarTodosTorneios() {
         List<Torneio> torneios = torneioService.buscarTodosTorneios();
         if (torneios.isEmpty()) {
-            return ResponseEntity.noContent().build(); // 204 No Content se não houver dados
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(torneios); // 200 OK com a lista
+        return ResponseEntity.ok(torneios);
     }
 
     // GET /torneios/{id} - Buscar torneio por ID
@@ -52,16 +50,14 @@ public class TorneioController {
     public ResponseEntity<Torneio> buscarTorneioPorId(@PathVariable Integer id) {
         Optional<Torneio> torneio = torneioService.buscarTorneioPorId(id);
         if (torneio.isPresent()) {
-            return ResponseEntity.ok(torneio.get()); // 200 OK com o torneio
+            return ResponseEntity.ok(torneio.get());
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found se não encontrar
+        return ResponseEntity.notFound().build();
     }
 
     // PUT /torneios/{id} - Atualizar um torneio existente
     @PutMapping("/{id}")
     public ResponseEntity<Torneio> atualizarTorneio(@PathVariable Integer id, @RequestBody @Valid TorneioDTO torneioDTO) {
-        // Cria uma instância de Modalidade com o ID recebido no DTO, se fornecido.
-        // O service validará se a modalidade existe e anexará ao contexto.
         Modalidade modalidade = null;
         if (torneioDTO.getCodModalidade() != null) {
             modalidade = new Modalidade();
@@ -71,15 +67,15 @@ public class TorneioController {
         Torneio torneioParaAtualizar = new Torneio(
                 torneioDTO.getNome(),
                 torneioDTO.getQtdEquipe(),
-                modalidade // Passa a entidade Modalidade (com ID)
+                modalidade
         );
 
         Optional<Torneio> torneioAtualizado = torneioService.atualizarTorneio(id, torneioParaAtualizar);
 
         if (torneioAtualizado.isPresent()) {
-            return ResponseEntity.ok(torneioAtualizado.get()); // 200 OK com o torneio atualizado
+            return ResponseEntity.ok(torneioAtualizado.get());
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found se não existir
+        return ResponseEntity.notFound().build();
     }
 
     // DELETE /torneios/{id} - Excluir um torneio
@@ -87,8 +83,8 @@ public class TorneioController {
     public ResponseEntity<Void> deletarTorneio(@PathVariable Integer id) {
         boolean deletado = torneioService.deletarTorneio(id);
         if (deletado) {
-            return ResponseEntity.noContent().build(); // 204 No Content para exclusão bem-sucedida
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found se não existir
+        return ResponseEntity.notFound().build();
     }
 }

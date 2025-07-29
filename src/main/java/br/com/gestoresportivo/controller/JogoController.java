@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/jogos") // Mapeia para o caminho base /jogos
+@RequestMapping("/jogos")
 public class JogoController {
 
     @Autowired
@@ -26,8 +26,7 @@ public class JogoController {
     // POST /jogos - Criar um novo jogo
     @PostMapping
     public ResponseEntity<Jogo> criarJogo(@RequestBody @Valid JogoDTO jogoDTO) {
-        // Cria instâncias de Equipe e Torneio com base nos IDs do DTO
-        // O Service validará se essas entidades existem e as anexará ao contexto
+
         Equipe equipe1 = new Equipe();
         equipe1.setId(jogoDTO.getCodEquipe1());
 
@@ -66,15 +65,14 @@ public class JogoController {
     public ResponseEntity<Jogo> buscarJogoPorId(@PathVariable Integer id) {
         Optional<Jogo> jogo = jogoService.buscarJogoPorId(id);
         if (jogo.isPresent()) {
-            return ResponseEntity.ok(jogo.get()); // 200 OK com o jogo
+            return ResponseEntity.ok(jogo.get());
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found se não encontrar
+        return ResponseEntity.notFound().build();
     }
 
     // PUT /jogos/{id} - Atualizar um jogo existente
     @PutMapping("/{id}")
     public ResponseEntity<Jogo> atualizarJogo(@PathVariable Integer id, @RequestBody @Valid JogoDTO jogoDTO) {
-        // Cria instâncias de Equipe e Torneio com base nos IDs do DTO, se fornecidos
         Equipe equipe1 = null;
         if (jogoDTO.getCodEquipe1() != null) {
             equipe1 = new Equipe();
@@ -105,9 +103,9 @@ public class JogoController {
         Optional<Jogo> jogoAtualizado = jogoService.atualizarJogo(id, jogoParaAtualizar);
 
         if (jogoAtualizado.isPresent()) {
-            return ResponseEntity.ok(jogoAtualizado.get()); // 200 OK com o jogo atualizado
+            return ResponseEntity.ok(jogoAtualizado.get());
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found se não existir
+        return ResponseEntity.notFound().build();
     }
 
     // DELETE /jogos/{id} - Excluir um jogo
@@ -115,8 +113,8 @@ public class JogoController {
     public ResponseEntity<Void> deletarJogo(@PathVariable Integer id) {
         boolean deletado = jogoService.deletarJogo(id);
         if (deletado) {
-            return ResponseEntity.noContent().build(); // 204 No Content para exclusão bem-sucedida
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found se não existir
+        return ResponseEntity.notFound().build();
     }
 }

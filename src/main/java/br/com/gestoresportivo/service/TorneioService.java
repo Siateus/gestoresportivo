@@ -1,9 +1,12 @@
+// src/main/java/br/com/gestoresportivo/service/TorneioService.java
 package br.com.gestoresportivo.service;
 
 import br.com.gestoresportivo.entity.Modalidade;
 import br.com.gestoresportivo.entity.Torneio;
 import br.com.gestoresportivo.repository.ModalidadeRepository;
 import br.com.gestoresportivo.repository.TorneioRepository;
+import br.com.gestoresportivo.repository.EquipeTorneioRepository; // Importar
+import br.com.gestoresportivo.repository.JogoRepository; // Importar
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,9 +23,14 @@ public class TorneioService {
     private TorneioRepository torneioRepository;
 
     @Autowired
-    private ModalidadeRepository modalidadeRepository; // Injeta o repositório de Modalidade
+    private ModalidadeRepository modalidadeRepository;
 
-    // Método auxiliar para buscar e validar a Modalidade
+    @Autowired // Injetar o repositório de EquipeTorneio
+    private EquipeTorneioRepository equipeTorneioRepository;
+
+    @Autowired // Injetar o repositório de Jogo
+    private JogoRepository jogoRepository;
+
     private Modalidade buscarModalidadeExistente(Integer codModalidade) {
         if (codModalidade == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código da Modalidade não pode ser nulo.");
@@ -31,16 +39,14 @@ public class TorneioService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Modalidade não encontrada com ID: " + codModalidade));
     }
 
-    @Transactional // Garante que a operação seja transacional (atômica)
+    @Transactional
     public Torneio salvarTorneio(Torneio torneio) {
-        // Assegura que a modalidade referenciada exista e esteja gerenciada
         Modalidade modalidadeGerenciada = buscarModalidadeExistente(torneio.getModalidade().getId());
         torneio.setModalidade(modalidadeGerenciada);
-
         return torneioRepository.save(torneio);
     }
 
-    @Transactional(readOnly = true) // Otimiza transações para leitura
+    @Transactional(readOnly = true)
     public List<Torneio> buscarTodosTorneios() {
         return torneioRepository.findAll();
     }
@@ -50,12 +56,6 @@ public class TorneioService {
         return torneioRepository.findById(id);
     }
 
-    // Você pode adicionar métodos de busca personalizados aqui, por exemplo:
-    // @Transactional(readOnly = true)
-    // public Optional<Torneio> buscarTorneioPorNome(String nome) {
-    //     return torneioRepository.findByNome(nome);
-    // }
-
     @Transactional
     public Optional<Torneio> atualizarTorneio(Integer id, Torneio torneioAtualizado) {
         Optional<Torneio> torneioExistente = torneioRepository.findById(id);
@@ -63,37 +63,40 @@ public class TorneioService {
         if (torneioExistente.isPresent()) {
             Torneio torneio = torneioExistente.get();
 
-            // Atualiza campos
             if (torneioAtualizado.getNome() != null) {
                 torneio.setNome(torneioAtualizado.getNome());
             }
             if (torneioAtualizado.getQtdEquipe() != null) {
                 torneio.setQtdEquipe(torneioAtualizado.getQtdEquipe());
             }
-            // Lógica para atualizar a modalidade
             if (torneioAtualizado.getModalidade() != null && torneioAtualizado.getModalidade().getId() != null) {
                 Modalidade modalidadeGerenciada = buscarModalidadeExistente(torneioAtualizado.getModalidade().getId());
                 torneio.setModalidade(modalidadeGerenciada);
-            } else if (torneioAtualizado.getModalidade() == null) {
-                // Decida se permitir null aqui para 'modalidade' ou se requer o ID sempre
             }
 
             return Optional.of(torneioRepository.save(torneio));
         } else {
-            return Optional.empty(); // Torneio não encontrado
+            return Optional.empty();
         }
     }
 
     @Transactional
     public boolean deletarTorneio(Integer id) {
-        if (torneioRepository.existsById(id)) {
-            // CUIDADO: Se houver EquipeTorneio ou Jogos que referenciam este torneio,
-            // você pode ter erros de integridade referencial.
-            // O ideal é configurar o CASCADE (no @OneToMany) ou lidar com isso aqui
-            // (ex: remover registros de ligação primeiro).
-            torneioRepository.deleteById(id);
-            return true;
+        if (!torneioRepository.existsById(id)) {
+            return false;
         }
-        return false;
+
+        // 1. Verifica se existem associações em equipe_torneio
+        if (equipeTorneioRepository.existsByIdCodTorneio(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Não é possível deletar o Torneio com ID " + id + " pois ele possui equipes inscritas.");
+        }
+
+        // 2. Verifica se existem jogos vinculados a este torneio
+        if (jogoRepository.existsByTorneioId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Não é possível deletar o Torneio com ID " + id + " pois ele possui jogos vinculados.");
+        }
+
+        torneioRepository.deleteById(id);
+        return true;
     }
 }

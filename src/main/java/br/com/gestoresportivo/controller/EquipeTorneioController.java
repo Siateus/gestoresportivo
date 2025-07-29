@@ -26,7 +26,7 @@ public class EquipeTorneioController {
     // POST /equipes-torneios - Associar uma equipe a um torneio
     @PostMapping
     public ResponseEntity<EquipeTorneio> criarEquipeTorneio(@RequestBody @Valid EquipeTorneioDTO equipeTorneioDTO) {
-        // Cria a chave composta
+
         EquipeTorneioId id = new EquipeTorneioId(equipeTorneioDTO.getCodEquipe(), equipeTorneioDTO.getCodTorneio());
 
         Equipe equipe = new Equipe();
@@ -37,7 +37,7 @@ public class EquipeTorneioController {
 
         EquipeTorneio equipeTorneio = new EquipeTorneio(id, equipe, torneio);
 
-        // CHAMA O MÉTODO JPA-MANAGED DO SERVICE E RETORNA O RESULTADO DELE
+
         EquipeTorneio associacaoSalva = equipeTorneioService.salvarEquipeTorneio(equipeTorneio);
         return ResponseEntity.status(HttpStatus.CREATED).body(associacaoSalva);
     }

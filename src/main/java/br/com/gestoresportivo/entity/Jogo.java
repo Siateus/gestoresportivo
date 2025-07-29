@@ -18,10 +18,10 @@ public class Jogo {
     @Column(nullable = false)
     private LocalTime hora;
 
-    @Column(name = "p_time1", nullable = false) // Mapeia para snake_case e não nulo
+    @Column(name = "p_time1", nullable = false)
     private Integer pTime1;
 
-    @Column(name = "p_time2", nullable = false) // Mapeia para snake_case e não nulo
+    @Column(name = "p_time2", nullable = false)
     private Integer pTime2;
 
     @Column(nullable = false, length = 10)
@@ -29,8 +29,6 @@ public class Jogo {
 
     @ManyToOne // Relacionamento com Equipe 1
     @JoinColumn(name = "cod_equipe1", referencedColumnName = "cod", nullable = false)
-    // ^^^ 'name' é a coluna FK na tabela 'jogo'
-    // ^^^ 'referencedColumnName' é a PK na tabela 'equipe'
     private Equipe equipe1; // Mapeia para a entidade Equipe
 
     @ManyToOne // Relacionamento com Equipe 2
@@ -43,7 +41,6 @@ public class Jogo {
 
     public Jogo() {}
 
-    // Construtor para criar novos jogos (sem ID, que é gerado)
     public Jogo(LocalDate data, LocalTime hora, Integer pTime1, Integer pTime2, String placar,
                 Equipe equipe1, Equipe equipe2, Torneio torneio) {
         this.data = data;
@@ -70,9 +67,9 @@ public class Jogo {
     public String getPlacar() { return placar; }
     public void setPlacar(String placar) { this.placar = placar; }
     public Equipe getEquipe1() { return equipe1; } // Retorna a entidade Equipe
-    public void setEquipe1(Equipe equipe1) { this.equipe1 = equipe1; } // Recebe a entidade Equipe
+    public void setEquipe1(Equipe equipe1) { this.equipe1 = equipe1; }
     public Equipe getEquipe2() { return equipe2; } // Retorna a entidade Equipe
-    public void setEquipe2(Equipe equipe2) { this.equipe2 = equipe2; } // Recebe a entidade Equipe
-    public Torneio getTorneio() { return torneio; } // Retorna a entidade Torneio
-    public void setTorneio(Torneio torneio) { this.torneio = torneio; } // Recebe a entidade Torneio
+    public void setEquipe2(Equipe equipe2) { this.equipe2 = equipe2; }
+    public Torneio getTorneio() { return torneio; }
+    public void setTorneio(Torneio torneio) { this.torneio = torneio; }
 }

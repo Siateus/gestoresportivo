@@ -19,6 +19,7 @@ public class AtletaController {
     @Autowired
     private AtletaService atletaService;
 
+    // Endpoint POST para cadastrar atleta
     @PostMapping
     public ResponseEntity<Atleta> atleta(@RequestBody @Valid AtletaDTO atletaDTO) {
         Atleta atleta = new Atleta(
@@ -34,6 +35,7 @@ public class AtletaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(atletaSalvo);
     }
 
+    // Endpoint GET para buscar atleta por id
     @GetMapping("/{id}")
     public ResponseEntity<Atleta> buscarAtletaPorId(@PathVariable Integer id) {
         Optional<Atleta> atleta = atletaService.buscarAtletaPorId(id);
@@ -53,7 +55,7 @@ public class AtletaController {
         return ResponseEntity.notFound().build();
     }
 
-
+    // Endpoint PUT para atualizar atleta por id
     @PutMapping("/{id}")
     public ResponseEntity<Atleta> atualizarAtleta(@PathVariable Integer id, @RequestBody @Valid AtletaDTO atletaDTO) {
         Atleta atletaParaAtualizar = new Atleta(
@@ -71,6 +73,7 @@ public class AtletaController {
         }
         return ResponseEntity.notFound().build();
     }
+    // Endpoint GET para buscar todos os atletas
     @GetMapping
     public ResponseEntity<List<Atleta>> listarTodosAtletas() {
         List<Atleta> atletas = atletaService.buscarTodosAtletas();
@@ -80,6 +83,7 @@ public class AtletaController {
         return ResponseEntity.ok(atletas);
     }
 
+    // Endpoint DELETE para delatar atleta por id
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarAtleta(@PathVariable Integer id) {
         boolean deletado = atletaService.deletarAtleta(id);
