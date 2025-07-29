@@ -1,0 +1,209 @@
+2.1. Modalidades
+
+POST /modalidades
+
+{"nome": "Futebol", "qtdAtletaEquipe": 11}
+
+Esperado: 201 Created, ID 1
+
+POST /modalidades
+
+{"nome": "Voleibol", "qtdAtletaEquipe": 6}
+
+Esperado: 201 Created, ID 2
+
+POST /modalidades
+
+{"nome": "Basquete", "qtdAtletaEquipe": 5}
+
+Esperado: 201 Created, ID 3
+
+2.2. Equipes (Usando IDs de Modalidade criados: Futebol=1, Voleibol=2, Basquete=3)
+
+POST /equipes
+
+{"nome": "Time Alpha (Futebol)", "sigla": "TMA", "codModalidade": 1}
+
+Esperado: 201 Created, ID 1
+
+POST /equipes
+
+{"nome": "Time Beta (Futebol)", "sigla": "TMB", "codModalidade": 1}
+
+Esperado: 201 Created, ID 2
+
+POST /equipes
+
+{"nome": "Time Gamma (Voleibol)", "sigla": "TGV", "codModalidade": 2}
+
+Esperado: 201 Created, ID 3
+
+2.3. Atletas (Usando CPFs válidos e únicos)
+
+POST /atletas
+
+{"nome": "Pedro Costa Júnior", "cpf": "38530634039", "sexo": "m", "cidade": "São Paulo", "dataNascimento": "1999-05-10"}
+
+Esperado: 201 Created, ID 1
+
+POST /atletas
+
+{"nome": "Mariana Souza", "cpf": "57126929021", "sexo": "f", "cidade": "Curitiba", "dataNascimento": "2001-11-22"}
+
+Esperado: 201 Created, ID 2
+
+POST /atletas
+
+{"nome": "Fulano de Tal", "cpf": "99989799008", "sexo": "m", "cidade": "Porto Alegre", "dataNascimento": "1990-10-25"}
+
+Esperado: 201 Created, ID 3
+
+2.4. Torneios (Usando IDs de Modalidade criados: Futebol=1, Voleibol=2, Basquete=3)
+
+POST /torneios
+
+{"nome": "Campeonato Brasileiro de Futebol", "qtdEquipe": 16, "codModalidade": 1}
+
+Esperado: 201 Created, ID 1
+
+POST /torneios
+
+{"nome": "Copa Voleibol Nacional", "qtdEquipe": 8, "codModalidade": 2}
+
+Esperado: 201 Created, ID 2
+
+3. Testes de Validação (POST)
+
+3.1. Atleta: CPF Duplicado
+
+POST /atletas
+
+{"nome": "Outro Atleta", "cpf": "38530634039", "sexo": "f", "cidade": "Cidade", "dataNascimento": "2000-01-01"} 
+Esperado: 409 Conflict, Mensagem: "CPF já cadastrado para outro atleta."
+
+3.2. Equipe-Torneio: Modalidade Diferente
+
+POST /equipes-torneios
+
+{"codEquipe": 1, "codTorneio": 2} 
+
+Esperado: 400 Bad Request, Mensagem: "A equipe e o torneio devem ser da mesma modalidade."
+
+3.3. Equipe-Torneio: Associação Duplicada
+
+POST /equipes-torneios
+
+ {"codEquipe": 1, "codTorneio": 1} 
+
+Esperado: 201 Created
+
+POST /equipes-torneios (Repetir a anterior)
+
+Body: {"codEquipe": 1, "codTorneio": 1}
+
+Esperado: 409 Conflict, Mensagem: "Esta equipe já está inscrita neste torneio."
+
+3.4. Atleta-Equipe: Atleta já em outra equipe da mesma modalidade
+
+POST /atletas-equipes
+
+Body: {"codAtleta": 1, "codEquipe": 1} (Atleta 1 em Time Alpha (Futebol))
+
+Esperado: 201 Created
+
+POST /atletas-equipes
+
+Body: {"codAtleta": 1, "codEquipe": 2} (Atleta 1 em Time Beta (Futebol) - mesma modalidade)
+
+Esperado: 400 Bad Request, Mensagem: "Atleta já está em outra equipe da mesma modalidade."
+
+4. Testes de Consulta (GET)
+GET /modalidades
+
+Esperado: 200 OK, lista das 3 modalidades.
+
+GET /equipes
+
+Esperado: 200 OK, lista das 3 equipes.
+
+GET /atletas
+
+Esperado: 200 OK, lista dos 3 atletas.
+
+GET /torneios
+
+Esperado: 200 OK, lista dos 2 torneios.
+
+GET /equipes-torneios
+
+Esperado: 200 OK, lista das associações criadas (Equipe 1-Torneio 1, Equipe 3-Torneio 2). Note que agora os objetos equipe e torneio aninhados devem vir completos, não nulos.
+
+GET /atletas-equipes
+
+Esperado: 200 OK, lista das associações criadas (Atleta 1-Equipe 1). Note que agora os objetos atleta e equipe aninhados devem vir completos.
+
+GET /relatorios/atletas-por-equipe-modalidade
+
+Esperado: 200 OK, lista de atletas, equipes e modalidades. Deve mostrar "Pedro Costa Júnior" em "Time Alpha (Futebol)" da modalidade "Futebol".
+
+5. Testes de Atualização (PUT)
+PUT /atletas/1
+
+Body: {"nome": "Pedro Atualizado", "cpf": "38530634039", "sexo": "m", "cidade": "Rio de Janeiro", "dataNascimento": "1999-05-10"}
+
+Esperado: 200 OK, atleta atualizado.
+
+PUT /equipes/1
+
+Body: {"nome": "Time Alpha (Futebol) Atualizado", "sigla": "TAF", "codModalidade": 1}
+
+Esperado: 200 OK, equipe atualizada.
+
+PUT /torneios/1
+
+Body: {"nome": "Campeonato Brasileiro de Futebol 2025", "qtdEquipe": 20, "codModalidade": 1}
+
+Esperado: 200 OK, torneio atualizado.
+
+6. Testes de Exclusão (DELETE)
+6.1. Torneio: Com Associações (Deve Falhar)
+
+DELETE /torneios/1 (Torneio 1 tem associações em equipe_torneio e jogo)
+
+Esperado: 409 Conflict, Mensagem: "Não é possível deletar o Torneio com ID 1 pois ele possui equipes inscritas." (ou jogos vinculados, dependendo da ordem da validação).
+
+6.2. Jogo: Excluir um Jogo
+
+DELETE /jogos/1 (ID do jogo que você criou)
+
+Esperado: 204 No Content
+
+GET /jogos/1
+
+Esperado: 404 Not Found
+
+6.3. Equipe-Torneio: Excluir uma Associação
+
+DELETE /equipes-torneios/1/1 (Associação Equipe 1 - Torneio 1)
+
+Esperado: 204 No Content
+
+GET /equipes-torneios/1/1
+
+Esperado: 404 Not Found
+
+6.4. Torneio: Excluir um Torneio (Agora que as associações foram removidas)
+
+DELETE /torneios/1 (Torneio 1)
+
+Esperado: 204 No Content (se todas as associações e jogos foram removidos)
+
+6.5. Excluir Equipes e Atletas
+
+DELETE /equipes/1
+
+Esperado: 204 No Content (se não tiver mais associações atleta_equipe ou jogo)
+
+DELETE /atletas/1
+
+Esperado: 204 No Content (se não tiver mais associações atleta_equipe)
